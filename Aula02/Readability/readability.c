@@ -1,71 +1,56 @@
-//criar um programa que criptografa mensagens, usando uma chave aleatória
-#include <cs50.h>
+//criar um programa que calcula qual a série indicada para de ser um livro
+//utilizando a fómula Coleman-Liau
 #include <stdio.h>
-#include <string.h>
 #include <ctype.h>
-#include <stdlib.h>
+#include <cs50.h>
+#include <string.h>
+#include <math.h>
 
-int main(int argc, string argv[])
+int main(void)
 {
-    if (argc != 2) //checa se tem exatamente um argumento após o comando no terminal
-    {
-        printf("Use: ./substitution chave\n");
-        return 1;
-    }
+    //l = letras, p = palavras, f = frases, ml = média de palavras, mf = media de frases
+    int l = 0, p = 1, f = 0;
+    float ml, mf;
+    string s = get_string("Texto: ");
 
-    string chave = argv[1];
-    if (strlen(chave) != 26) //checa se tem exatamente 26 caracteres na chave
+    //contador de letras
+    for (int i = 0, n = strlen(s); i < n; i++)
     {
-        printf("Sua chave deve conter 26 letras\n");
-        return 1;
-    }
-
-    //checa todos os caracteres são letras
-    for (int i = 0, n = strlen(chave); i < n; i++)
-    {
-        if (!isalpha(chave[i]))
+        //contador de letras
+        if (isalpha(s[i]))
         {
-            printf("Sua chave deve conter somente letras\n");
-            return 1;
+            l++;
+        }
+
+        //contador de palavras
+        if (isspace(s[i]))
+        {
+            p++;
+        }
+
+        //contador de frases
+        if (s[i] == '.' || s[i] == '!' || s[i] == '?')
+        {
+            f++;
         }
     }
 
-    //checa se existem letras repetidas
-    for (int i = 0, n = strlen(chave); i < n; i++)
-    {
-        for (int j = i + 1; j < n; j++) //compara a letra atual com o resto da chave
-        {
-            if (tolower(chave[i]) == tolower(chave[j]))
-            {
-                printf("Sua chave não deve conter letras repetidas\n");
-                return 1;
-            }
-        }
-    }
+    //média de letras e frases em 100 palavras e fórmula de Coleman-Liau
+    ml = (l * 100) / (float) p;
+    mf = (f * 100) / (float) p;
+    float cl = (0.0588 * ml) - (0.296 * mf) - 15.8;
 
-    string plain = get_string("plaintext: ");
-    printf("ciphertext: ");
-    //Cripitografando
-    for (int i = 0, n = strlen(plain); i < n; i++)
+    if (cl < 1)
     {
-        if (isalpha(plain[i])) //apenas criptografar letras
-        {
-            if (isupper(plain[i]))
-            {
-                int l = plain[i] - 65;
-                printf("%c", toupper(chave[l])); //mostrar a letra criptografada na mesma caixa que foi escrita no texto simples
-            }
-            else if (islower(plain[i]))
-            {
-                int l = plain[i] - 97;
-                printf("%c", tolower(chave[l]));
-            }
-        }
-        else
-        {
-            printf("%c", plain[i]);
-        }
+        printf("Before Grade 1");
+    }
+    else if (cl > 16)
+    {
+        printf("Grade 16+");
+    }
+    else
+    {
+        printf("Grade %i", (int) round(cl));
     }
     printf("\n");
-    return 0;
 }
